@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yash Jindal: ML, agents and backend projects</title>
+<meta name="description" content="Projects by Yash Jindal (BITS Pilani): computer vision for a cooking robot, a self-improving agent platform, reinforcement learning for port logistics, and event-driven microservices. Each one measured on held-out data.">
+<meta property="og:title" content="Yash Jindal: projects">
+<meta property="og:description" content="Computer vision, agents, reinforcement learning and backend systems, each measured on held-out data.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EDF3E8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16231C" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23EDF3E8'/%3E%3Cpath d='M5 24 L12 17 L18 19 L27 8' fill='none' stroke='%231C2B4A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='27' cy='8' r='2.6' fill='%23B8322A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#work">Skip to projects</a>
+
+<header class="top">
+  <nav aria-label="Sections">
+    <a href="#work">Projects</a>
+    <a href="#more">Also built</a>
+    <a href="#experience">Experience</a>
+    <a href="#background">Skills</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="name">
+    <div class="hero-text">
+      <h1 id="name">Yash Jindal</h1>
+      <p class="lede">I build machine-learning systems, agents and backends, and I measure whether they actually work, on data they haven't seen.</p>
+      <p class="sub">Dual-degree student at BITS Pilani: M.Sc. Chemistry and B.E. Electronics &amp; Instrumentation. Currently a product and data analyst intern at Piramal Finance.</p>
+      <ul class="hero-links">
+        <li><a href="https://github.com/jindalyash07">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/yash-jindal-557269257/">LinkedIn</a></li>
+        <li><a href="resume.pdf">Résumé (PDF)</a></li>
+      </ul>
+    </div>
+
+    <figure class="plot" aria-labelledby="plot-cap">
+      <svg id="plot" viewBox="0 0 520 340" role="img" aria-describedby="plot-desc">
+        <desc id="plot-desc">Line chart from PanSense. Prediction error on unseen dishes as cooking speed varies from half speed to double speed. A fixed timer's error rises from 0.198 at normal speed to 0.277 at half speed and 0.235 at double speed. The camera plus clock model stays between 0.174 and 0.225.</desc>
+      </svg>
+      <figcaption id="plot-cap">From <a href="#pansense">PanSense</a>: error when cooking runs faster or slower than usual, on dishes the model never saw. A timer drifts; the camera keeps up.</figcaption>
+    </figure>
+  </section>
+
+  <section id="work" class="work" aria-labelledby="work-h">
+    <h2 id="work-h">Projects</h2>
+
+    <article class="project" id="pansense">
+      <header>
+        <h3>PanSense</h3>
+        <p class="what">Sees what's in the pan, how cooked it is, and what to do next, from one overhead camera.</p>
+      </header>
+      <aside class="finding">
+        <p>My first doneness model barely beat a constant guess: the features recognised <em>which video</em> it was, not how cooked the food was.</p>
+        <p>Measuring each frame as change since the food went in fixed it on all 30 of 30 held-out videos.</p>
+      </aside>
+      <div class="body">
+        <p>A computer-vision pipeline for a cooking robot, built only from public data. Grounding DINO and SAM turn ingredient tags into pixel masks, which train a small segmenter fast enough for the robot. Frozen DINOv2 features of the food track doneness, a clock-aware model decides when it's done, and a rule layer explains each action: wait, stir, add, check heat or stop.</p>
+        <dl class="numbers">
+          <div><dt>Rank correlation on unseen dishes</dt><dd>0.29 <span aria-hidden="true">→</span><span class="sr">to</span> 0.89</dd></div>
+          <div><dt>Beats a timer when cooking speed changes</dt><dd>20–25 of 30 videos</dd></div>
+          <div><dt>Per decision on a laptop RTX 3050 / CPU only</dt><dd>46 ms / 87 ms</dd></div>
+        </dl>
+        <p class="built">Python, PyTorch, DINOv2, Grounding DINO, SAM, YOLO, ONNX Runtime, scikit-learn. 95% bootstrap intervals and paired tests on every result.</p>
+        <p class="status">In progress: the dataset is growing from 30 to about 80 clips, and the numbers above will move.</p>
+        <p class="links"><a href="https://github.com/jindalyash07/pansense">Code and results on GitHub</a></p>
+      </div>
+    </article>
+
+    <article class="project" id="gamesmith">
+      <header>
+        <h3>GameSmith</h3>
+        <p class="what">An agent platform that writes puzzle games, proves they're solvable, repairs its own mistakes and learns from them.</p>
+      </header>
+      <aside class="finding">
+        <p>Learned rules lifted first-try success from 62% to 88% on 8 runs. On 24 runs it was 75%, so 75% is the number I report.</p>
+        <p>Claude almost never wrote broken logic; it misjudged difficulty. The exact solver caught that.</p>
+      </aside>
+      <div class="body">
+        <p>A Claude agent writes each game in TypeScript inside a confined workspace. Gates it cannot edit lint, compile and verify it: one generic breadth-first-search verifier proves every level solvable and checks difficulty never drops, for any puzzle genre. Failures become a playbook that is kept only if it improves held-out results. A red-team suite checks that prompt injections can't escape.</p>
+        <dl class="numbers">
+          <div><dt>First-try pass on held-out specs</dt><dd>62% <span aria-hidden="true">→</span><span class="sr">to</span> 75%</dd></div>
+          <div><dt>Injected malicious actions that succeeded</dt><dd>0 of 15</dd></div>
+          <div><dt>p95 latency with the learned playbook</dt><dd>−24%</dd></div>
+        </dl>
+        <p class="built">Python, TypeScript, Node permission model, Anthropic tool use, Gemini adapter, Prometheus metrics. 51 pytest and 13 verifier tests.</p>
+        <p class="links"><a href="https://github.com/jindalyash07/gamesmith">Code and results on GitHub</a></p>
+      </div>
+    </article>
+
+    <article class="project" id="berth">
+      <header>
+        <h3>Berth-RL</h3>
+        <p class="what">Which ship gets the next free berth at a container port: classic dispatch rules vs reinforcement learning vs an optimal schedule.</p>
+      </header>
+      <aside class="finding">
+        <p>PPO never significantly beat the simple WSPT rule. But it learned to hold deep berths free for incoming large ships.</p>
+        <p>Turning that habit into a two-line rule beat PPO in 3 of 4 scenarios (paired Wilcoxon, p &lt; 0.02).</p>
+      </aside>
+      <div class="body">
+        <p>A reproducible study of dynamic berth allocation on an event-driven Gymnasium simulator. A MaskablePPO dispatcher with a HOLD action is compared against FCFS, SPT and WSPT, and against an OR-Tools CP-SAT schedule that knows every arrival in advance. Four scenarios, three distribution shifts and 5 training seeds, compared with paired Wilcoxon tests per instance.</p>
+        <dl class="numbers">
+          <div><dt>Clairvoyant headroom captured by the new rule</dt><dd>up to 39%</dd></div>
+          <div><dt>PPO vs WSPT on the base terminal</dt><dd>+1.5%, p = 0.13</dd></div>
+          <div><dt>Gap between WSPT and the clairvoyant optimum</dt><dd>5–7%</dd></div>
+        </dl>
+        <p class="built">Python, PyTorch, Gymnasium, Stable-Baselines3 (MaskablePPO), OR-Tools CP-SAT, SciPy. 26 tests.</p>
+        <p class="links"><a href="https://github.com/jindalyash07/berth-rl">Code and write-up on GitHub</a></p>
+      </div>
+    </article>
+
+    <article class="project" id="streamforge">
+      <header>
+        <h3>StreamForge</h3>
+        <p class="what">EventFlow: an e-commerce backend where four services talk only through Kafka events, built to survive duplicates, failures and outages.</p>
+      </header>
+      <aside class="finding">
+        <p>An order and its event are written in one database transaction, then relayed to Kafka. Nothing is lost if the broker is down, and tests prove it.</p>
+      </aside>
+      <div class="body">
+        <p>Order, payment, notification and analytics services, each in its own consumer group. Reliability comes from a transactional outbox, idempotent consumers, manual offset commits, retries with exponential backoff and a dead-letter queue. Structured logs and Prometheus metrics show what happened, and Kubernetes manifests deploy it.</p>
+        <dl class="numbers">
+          <div><dt>Independent services</dt><dd>4</dd></div>
+          <div><dt>Retries before the dead-letter queue</dt><dd>3</dd></div>
+          <div><dt>Broker or database needed to run the tests</dt><dd>none</dd></div>
+        </dl>
+        <p class="built">Python, FastAPI, Apache Kafka, PostgreSQL, Redis, Docker Compose, Kubernetes, pytest.</p>
+        <p class="links"><a href="https://github.com/jindalyash07/StreamForge">Code on GitHub</a></p>
+      </div>
+    </article>
+  </section>
+
+  <section id="more" class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Also built</h2>
+    <div class="also">
+      <article class="also-item" id="peerlink">
+        <h3><a href="https://github.com/jindalyash07/Peerlink">Peerlink</a></h3>
+        <p class="what">Group video calls in the browser, with no media server in the middle.</p>
+        <p>Every participant connects directly to every other over WebRTC (a mesh), so audio and video never pass through the server. The server's only job is signalling: it relays offers, answers and network candidates between browsers over Socket.IO, and announces who joined or left. Rooms get a random ID and an 8-character password that's stored only as a bcrypt hash. Calls include live text chat.</p>
+        <p class="built">React and Vite, Node.js, Express, Socket.IO, WebRTC with STUN, MongoDB, JWT, served over HTTPS so browsers allow camera access.</p>
+      </article>
+
+      <article class="also-item" id="subscriptions">
+        <h3><a href="https://github.com/jindalyash07/Subscription_tracker">Subscription tracker API</a></h3>
+        <p class="what">Keeps track of your subscriptions and emails you before each one renews.</p>
+        <p>Creating a subscription starts a durable workflow that sleeps until 7, 5, 2 and 1 days before the renewal date and sends an email at each step. Because the workflow runs on Upstash rather than in the server's memory, reminders survive restarts, and they stop if the subscription is cancelled. Requests pass through bot detection, attack shielding and a token-bucket rate limit. Sign-up runs in a MongoDB transaction with bcrypt-hashed passwords.</p>
+        <p class="built">Node.js, Express, MongoDB with Mongoose validation, JWT, Upstash Workflow, Arcjet, Nodemailer.</p>
+      </article>
+
+      <article class="also-item" id="phishing">
+        <h3><a href="https://github.com/jindalyash07/Phishing-Detection-System">Phishing detection pipeline</a></h3>
+        <p class="what">Flags phishing websites from 30 signals in their URL and page, as a pipeline that can be retrained end to end.</p>
+        <p>Trained on 11,055 labelled websites, using signals such as an IP address in the URL, SSL state and URL length. Each stage saves its own artifacts: ingestion from MongoDB, schema checks and a KS-test drift report between train and test data, KNN imputation, then a grid search over five classifiers that keeps the best one. Every run's precision, recall and F1 are tracked in MLflow on DagsHub. A FastAPI service retrains on request and scores an uploaded CSV.</p>
+        <p class="built">Python, scikit-learn, pandas, MongoDB, MLflow, DagsHub, FastAPI, Docker.</p>
+      </article>
+
+      <article class="also-item" id="movies">
+        <h3><a href="https://github.com/jindalyash07/Movie_recommender">Movie recommender</a></h3>
+        <p class="what">Describe what you feel like watching in plain words, and get four films back.</p>
+        <p>Searches 44,584 films released between 1874 and 2020. Each film's title, year, lead actor, director and plot summary are embedded with e5 into a Chroma vector store. A query first retrieves the 10 nearest films, then a cross-encoder reads each query and film pair together and re-ranks them, keeping the best four. Results show posters from TMDB.</p>
+        <p class="built">Python, LangChain, sentence-transformers (e5-base-v2, MS MARCO cross-encoder), Chroma, Gradio, TMDB API.</p>
+      </article>
+    </div>
+
+    <h3 class="smaller-h">Smaller projects</h3>
+    <ul class="compact">
+      <li>
+        <h4><a href="https://github.com/jindalyash07/Agentic-code-Reviewer">Agentic code reviewer</a></h4>
+        <p>A LangGraph agent that finds bugs in Python files, proposes fixes as a diff and applies them only after you approve. Originals are never overwritten.</p>
+      </li>
+      <li>
+        <h4><a href="https://github.com/jindalyash07/Ticket-booking-system">Train ticket booking</a> and <a href="https://github.com/jindalyash07/java-socket-programming">socket server</a></h4>
+        <p>Java fundamentals: a command-line booking system with users, trains and seat booking, and single- vs multi-threaded socket servers.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="experience" class="experience" aria-labelledby="exp-h">
+    <h2 id="exp-h">Experience</h2>
+    <ol class="timeline">
+      <li>
+        <p class="when">Jul 2026–present</p>
+        <div>
+          <h3>Piramal Finance, Mumbai</h3>
+          <p class="role">Product and data analyst intern</p>
+          <ul>
+            <li>Own end-to-end funnel analytics for cross-sell digital lending. The insights helped lift conversion from OTP-verified lead to disbursal from 22% to 30% in one month, the team's highest-ever disbursals.</li>
+            <li>Traced KYC drop-offs to PAN–Aadhaar linkage and name mismatches, which led to outreach that cut KYC drop-off from 24% to 18%. Segmented first-offer drop-offs by interest rate and amount to shape better offers.</li>
+            <li>Shipped a daily Python funnel pipeline on Snowflake and MongoDB data, and an underwriting report covering about 5,000 cases a month.</li>
+            <li>Reconciled the written credit policy with the live decision engine, surfacing customers who were being wrongly rejected.</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <p class="when">Aug 2024–Jan 2025</p>
+        <div>
+          <h3>Embedded Systems Robotics Lab, BITS Pilani</h3>
+          <p class="role">Undergraduate researcher</p>
+          <ul>
+            <li>Reproduced <a href="https://arxiv.org/abs/2310.07937">Co-NavGPT</a>, an LLM-based global planner that lets a team of robots search a building for an object together, in the Habitat simulator.</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <p class="when">May–Jul 2024</p>
+        <div>
+          <h3>Centre for Railway Information Systems (CRIS), New Delhi</h3>
+          <p class="role">Machine-learning intern</p>
+          <ul>
+            <li>Built a fare-prediction model on 452,000 flight records and benchmarked 7 regressors. Random Forest did best, with R² 0.95 and a mean error of ₹2.0K, against ₹9.4K for linear regression.</li>
+          </ul>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="background" class="background" aria-labelledby="bg-h">
+    <h2 id="bg-h">Education and skills</h2>
+    <div class="bg-grid">
+      <div>
+        <h3>BITS Pilani, 2022–2027</h3>
+        <p>Dual degree: M.Sc. Chemistry and B.E. Electronics &amp; Instrumentation.</p>
+        <p class="built">Coursework: machine learning, artificial intelligence, data structures and algorithms, probability and statistics, operating systems.</p>
+        <h3 class="cert-h">Certifications</h3>
+        <ul class="plain">
+          <li>Deep Learning Specialization, DeepLearning.AI</li>
+          <li>Data Science and Machine Learning Bootcamp, Udemy</li>
+        </ul>
+      </div>
+      <dl class="skills">
+        <div><dt>LLM agents and evaluation</dt><dd>Tool-use agent harnesses, evals, self-improvement loops, prompt-injection red-teaming, Claude Code</dd></div>
+        <div><dt>Machine learning and RL</dt><dd>PyTorch, PPO, Stable-Baselines3, Gymnasium, OR-Tools CP-SAT, scikit-learn, XGBoost, computer vision with DINOv2, SAM and YOLO</dd></div>
+        <div><dt>Systems and data</dt><dd>Kafka, Docker, Kubernetes, FastAPI, PostgreSQL, Snowflake, MongoDB, Prometheus, Git</dd></div>
+        <div><dt>Languages</dt><dd>Python, TypeScript, C++, JavaScript, SQL</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="contact" class="contact" aria-labelledby="contact-h">
+    <h2 id="contact-h">Contact</h2>
+    <p>Email me at <a href="mailto:f20221117@pilani.bits-pilani.ac.in">f20221117@pilani.bits-pilani.ac.in</a>, or message me on LinkedIn. All the code is on GitHub.</p>
+    <ul class="hero-links">
+      <li><a href="https://github.com/jindalyash07">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/yash-jindal-557269257/">LinkedIn</a></li>
+      <li><a href="resume.pdf">Résumé (PDF)</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>The chart at the top is plotted from PanSense's held-out results. Yash Jindal, 2026.</p>
+</footer>
+
+<script src="plot.js" defer></script>
+</body>
+</html>
