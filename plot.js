@@ -1,8 +1,8 @@
 // Hand-plotted hero chart. Data: PanSense speed test on unseen dishes (MAE, lower is better).
 // Update these two arrays when the PanSense results change.
 const SPEEDS = [0.5, 0.75, 1.0, 1.5, 2.0];
-const TIMER = [0.277, 0.230, 0.198, 0.210, 0.235];
-const FUSION = [0.225, 0.196, 0.183, 0.174, 0.175];
+const TIMER = [0.274, 0.235, 0.207, 0.204, 0.218];
+const FUSION = [0.202, 0.177, 0.166, 0.159, 0.158];
 
 (function draw() {
   const svg = document.getElementById("plot");

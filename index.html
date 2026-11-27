@@ -44,9 +44,9 @@
 
     <figure class="plot" aria-labelledby="plot-cap">
       <svg id="plot" viewBox="0 0 520 340" role="img" aria-describedby="plot-desc">
-        <desc id="plot-desc">Line chart from PanSense. Prediction error on unseen dishes as cooking speed varies from half speed to double speed. A fixed timer's error rises from 0.198 at normal speed to 0.277 at half speed and 0.235 at double speed. The camera plus clock model stays between 0.174 and 0.225.</desc>
+        <desc id="plot-desc">Line chart from PanSense. Prediction error on unseen dishes as cooking speed varies from half speed to double speed. A fixed timer's error rises from 0.207 at normal speed to 0.274 at half speed and 0.218 at double speed. The camera plus clock model stays between 0.158 and 0.202.</desc>
       </svg>
-      <figcaption id="plot-cap">From <a href="#pansense">PanSense</a>: error when cooking runs faster or slower than usual, on dishes the model never saw. A timer drifts; the camera keeps up.</figcaption>
+      <figcaption id="plot-cap">From <a href="#pansense">PanSense</a>: error when cooking runs faster or slower than usual, on dishes the model never saw. 89 clips, 7 dishes. A timer drifts; the camera keeps up.</figcaption>
     </figure>
   </section>
 
@@ -60,17 +60,16 @@
       </header>
       <aside class="finding">
         <p>My first doneness model barely beat a constant guess: the features recognised <em>which video</em> it was, not how cooked the food was.</p>
-        <p>Measuring each frame as change since the food went in fixed it on all 30 of 30 held-out videos.</p>
+        <p>Measuring each frame as change since the food went in fixed it on 88 of 89 held-out videos.</p>
       </aside>
       <div class="body">
         <p>A computer-vision pipeline for a cooking robot, built only from public data. Grounding DINO and SAM turn ingredient tags into pixel masks, which train a small segmenter fast enough for the robot. Frozen DINOv2 features of the food track doneness, a clock-aware model decides when it's done, and a rule layer explains each action: wait, stir, add, check heat or stop.</p>
         <dl class="numbers">
-          <div><dt>Rank correlation on unseen dishes</dt><dd>0.29 <span aria-hidden="true">→</span><span class="sr">to</span> 0.89</dd></div>
-          <div><dt>Beats a timer when cooking speed changes</dt><dd>20–25 of 30 videos</dd></div>
+          <div><dt>Rank correlation on unseen dishes</dt><dd>0.27 <span aria-hidden="true">→</span><span class="sr">to</span> 0.91</dd></div>
+          <div><dt>Beats a timer at every cooking speed, on unseen dishes</dt><dd>58–77 of 89 videos</dd></div>
           <div><dt>Per decision on a laptop RTX 3050 / CPU only</dt><dd>46 ms / 87 ms</dd></div>
         </dl>
         <p class="built">Python, PyTorch, DINOv2, Grounding DINO, SAM, YOLO, ONNX Runtime, scikit-learn. 95% bootstrap intervals and paired tests on every result.</p>
-        <p class="status">In progress: the dataset is growing from 30 to about 80 clips, and the numbers above will move.</p>
         <p class="links"><a href="https://github.com/jindalyash07/pansense">Code and results on GitHub</a></p>
       </div>
     </article>
